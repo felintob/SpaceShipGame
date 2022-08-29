@@ -8,22 +8,39 @@ import java.util.List;
 
 import javax.swing.ImageIcon;
 
-public class Player{
+public class Player implements ActionListener{
 
     private int x,y;
     private int dx,dy;
     private Image imagem;
     private int altura, largura;
     private List<Tiro> tiros;
-    private boolean isVisivel;
+    private boolean isVisivel, isTurbo;
+    private Timer timer;
 
     public Player(){
         this.x = 100;
         this.y = 100;
         isVisivel = true;
+        isTurbo = false;
 
-        tiro = new ArrayList<Tiro>();
+        tiros = new ArrayList<Tiro>();
 
+        timer = new Timer(5000, this);
+        timer.start();
+
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e){
+        if(isTurbo == true){
+            turbo();
+            isTurbo = false;
+        }
+
+        if(isTurbo == false){
+            load();
+        }
     }
 
     public void load(){
@@ -43,6 +60,12 @@ public class Player{
         this.tiros.add(new Tiro(x+largura, y + (altura/2)));
     }
 
+    public void turbo(){
+        isTurbo = true;
+        ImageIcon referencia = new ImageIcon("res\\naveturbo.png");
+        imagem = referencia.getImage();
+    }
+
     public Rectangle getBounds(){
         return new Rectangle(x,y,largura,altura);
     }
@@ -50,8 +73,16 @@ public class Player{
     public void keyPressed(KeyEvent tecla){
         int codigo = tecla.getKeyCode();
 
+        if(codigo == KeyEvent.VK_SPACE) {
+            turbo();
+        }
+        
         if(codigo == KeyEvent.VK_A) {
-            tiroSimples();
+            if(isTurbo == false){
+                tiroSimples();
+
+            }
+        }
 
         if(codigo == KeyEvent.VK_UP) {
             dy = -3;
